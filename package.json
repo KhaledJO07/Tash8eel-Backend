@@ -20,6 +20,7 @@
   "homepage": "https://github.com/KhaledJO07/Tash8eel-Backend#readme",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
