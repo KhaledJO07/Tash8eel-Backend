@@ -1,7 +1,7 @@
 // routes/users.js
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
+const User = require('../models/User'); // Assuming you have a User model defined in models/User.j
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const auth = require('../middleware/auth'); // middleware to check token
