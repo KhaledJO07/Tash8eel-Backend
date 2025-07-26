@@ -1,14 +1,17 @@
-// models/User.js
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-  name: String,
-  username: { type: String, unique: true },
-  email: { type: String, unique: true },
-  password: String,
-  bio: String,
-  profileImage: String, // URL to image
-  joinedAt: { type: Date, default: Date.now }
+const UserSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  name: { type: String, default: '' },
+  age: { type: Number, default: null },
+  bio: { type: String, default: '' },
+  profileImage: { type: String, default: '' },
+  height: { type: Number, default: null },
+  weight: { type: Number, default: null },
+  goal: { type: String, default: '' },
+  activityLevel: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', UserSchema);

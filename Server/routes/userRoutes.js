@@ -2,12 +2,11 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User'); // Assuming you have a User model defined in models/User.j
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const auth = require('../middleware/auth'); // middleware to check token
 const multer = require('multer');
+const jwt = require('jsonwebtoken');
 
-// Sign up
 router.post('/signup', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -15,21 +14,27 @@ router.post('/signup', async (req, res) => {
         if (existingUser)
             return res.status(400).json({ message: 'User already exists' });
 
-        // Hash the password before saving:
         const hashed = await bcrypt.hash(password, 10);
-
         const newUser = new User({ email, password: hashed });
-        const saved = await newUser.save();
+        const savedUser = await newUser.save();
 
-        return res.status(201).json({ message: 'User created', user: saved });
+        // ✅ Generate token
+        const token = jwt.sign({ id: savedUser._id }, process.env.SECRET_KEY, {
+            expiresIn: '1h',
+        });
+
+        // ✅ Send it back
+        return res.status(201).json({
+            message: 'User created',
+            user: savedUser,
+            token, // ✅ include token here
+        });
     } catch (error) {
         console.error('Signup error:', error);
         return res.status(500).json({ message: 'Server error during signup' });
     }
 });
 
-
-// Login
 // Login
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -46,7 +51,7 @@ router.post('/login', async (req, res) => {
         //     return res.status(400).json({ message: 'Invalid email or password' });
         // }
 
-        const token = jwt.sign({ id: user._id }, 'SECRET', { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
 
         return res.status(200).json({ message: 'Login successful', user, token });
     } catch (error) {
@@ -82,22 +87,44 @@ router.delete('/:email', async (req, res) => {
 });
 
 
-// Get Profile
+// GET profile
+// GET profile + fitness completeness
 router.get('/profile', auth, async (req, res) => {
     const user = await User.findById(req.user.id).select('-password');
-    res.json(user);
+
+    const profileComplete = !!(
+        user.height &&
+        user.weight &&
+        user.goal &&
+        user.activityLevel
+    );
+
+    res.json({ ...user._doc, profileComplete });
 });
 
-// Update Profile
+
 router.put('/profile', auth, async (req, res) => {
-    const { name, age, bio, profileImage } = req.body;  // changed avatarUrl => profileImage
-    const user = await User.findByIdAndUpdate(
-        req.user.id,
-        { name, age, bio, profileImage },
-        { new: true }
-    ).select('-password');
-    res.json(user);
+    try {
+        const updateData = {};
+
+        // Only update fields if they exist in req.body
+        ['name', 'age', 'bio', 'profileImage', 'height', 'weight', 'goal', 'activityLevel'].forEach(field => {
+            if (req.body[field] !== undefined) {
+                updateData[field] = req.body[field];
+            }
+        });
+
+        const user = await User.findByIdAndUpdate(req.user.id, updateData, { new: true }).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        res.json(user);
+    } catch (error) {
+        console.error('Profile update error:', error);
+        res.status(500).json({ message: 'Server error updating profile' });
+    }
 });
+
+
 
 
 // 1. Multer Storage Configuration
