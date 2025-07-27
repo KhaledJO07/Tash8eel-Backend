@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, default: '' },
   age: { type: Number, default: null },
   bio: { type: String, default: '' },
-  profileImage: { type: String, default: '' },
+  avatarUrl: { type: String, default: '' },
   height: { type: Number, default: null },
   weight: { type: Number, default: null },
   goal: { type: String, default: '' },

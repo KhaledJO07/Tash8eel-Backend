@@ -6,6 +6,11 @@ const bcrypt = require('bcryptjs');
 const auth = require('../middleware/auth'); // middleware to check token
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
+const upload = require('../middleware/uploadMiddleware');
+const {
+    updateUserProfile,
+    getUserProfile,
+} = require('../controllers/userController');
 
 router.post('/signup', async (req, res) => {
     const { email, password } = req.body;
@@ -87,84 +92,9 @@ router.delete('/:email', async (req, res) => {
 });
 
 
-// GET profile
-// GET profile + fitness completeness
-router.get('/profile', auth, async (req, res) => {
-    const user = await User.findById(req.user.id).select('-password');
+router.get('/profile', auth, getUserProfile);
+router.put('/profile', auth, upload.single('profileImage'), updateUserProfile);
 
-    const profileComplete = !!(
-        user.height &&
-        user.weight &&
-        user.goal &&
-        user.activityLevel
-    );
-
-    res.json({ ...user._doc, profileComplete });
-});
-
-
-router.put('/profile', auth, async (req, res) => {
-    try {
-        const updateData = {};
-
-        // Only update fields if they exist in req.body
-        ['name', 'age', 'bio', 'profileImage', 'height', 'weight', 'goal', 'activityLevel'].forEach(field => {
-            if (req.body[field] !== undefined) {
-                updateData[field] = req.body[field];
-            }
-        });
-
-        const user = await User.findByIdAndUpdate(req.user.id, updateData, { new: true }).select('-password');
-        if (!user) return res.status(404).json({ message: 'User not found' });
-
-        res.json(user);
-    } catch (error) {
-        console.error('Profile update error:', error);
-        res.status(500).json({ message: 'Server error updating profile' });
-    }
-});
-
-
-
-
-// 1. Multer Storage Configuration
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // uploads folder
-    },
-    filename: function (req, file, cb) {
-        const uniqueName = Date.now() + '-' + file.originalname;
-        cb(null, uniqueName);
-    }
-});
-
-// 2. Init Upload
-const upload = multer({
-    storage,
-    fileFilter(req, file, cb) {
-        if (!file.mimetype.startsWith('image/')) {
-            return cb(new Error('Only image files are allowed!'));
-        }
-        cb(null, true);
-    },
-});
-
-// 3. Upload API Route
-router.post('/upload-profile-image', auth, upload.single('image'), async (req, res) => {
-    try {
-        if (!req.file) return res.status(400).json({ error: 'No image provided' });
-
-        const imagePath = `/uploads/${req.file.filename}`;
-
-        const user = await User.findByIdAndUpdate(req.user.id, { profileImage: imagePath }, { new: true });
-        if (!user) return res.status(404).json({ error: 'User not found' });
-
-        res.json({ message: 'Image uploaded successfully', user });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Something went wrong' });
-    }
-});
 
 
 module.exports = router;

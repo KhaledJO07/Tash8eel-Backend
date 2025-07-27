@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
 const mongoose = require('mongoose');
 const app = express();
 const PORT = 3000;
@@ -8,13 +9,18 @@ const userRoutes = require('./routes/userRoutes'); // Adjust the path as necessa
 require('dotenv').config();
 const path = require('path');
 
-
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Mongo connected'))
     .catch((err) => console.error(err));
 
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // to parse application/x-www-form-urlencoded
+
 app.use(cors());
 
 app.use('/users', userRoutes);
