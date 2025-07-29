@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const app = express();
 const PORT = 3000;
 const bodyParser = require('body-parser');
-const userRoutes = require('./routes/userRoutes'); 
 require('dotenv').config();
 const path = require('path');
 
@@ -23,6 +22,7 @@ app.use(express.urlencoded({ extended: true })); // to parse application/x-www-f
 
 app.use(cors());
 
+const userRoutes = require('./routes/userRoutes'); 
 app.use('/users', userRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //
