@@ -1,28 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const Workout = require('../models/Workout');
-
-// // Get all workouts
-// router.get('/', async (req, res) => {
-//   try {
-//     const workouts = await Workout.find();
-//     res.json(workouts);
-//   } catch (err) {
-//     res.status(500).json({ error: 'Failed to fetch workouts' });
-//   }
-// });
-
-// // Get workouts by category
-// router.get('/category/:category', async (req, res) => {
-//   try {
-//     const workouts = await Workout.find({ category: req.params.category });
-//     res.json(workouts);
-//   } catch (err) {
-//     res.status(500).json({ error: 'Failed to fetch by category' });
-//   }
-// });
-
-// module.exports = router;
 const express = require('express');
 const router = express.Router();
 const Workout = require('../models/Workout');
@@ -52,6 +27,37 @@ router.get('/category/:category', async (req, res) => {
     res.json(fullWorkouts);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch workouts by category' });
+  }
+});
+
+//POST
+router.post('/', async (req, res) => {
+  try {
+    const {
+      name,
+      category,
+      description,
+      tips,
+      targetMuscles,
+      duration,
+      animationFile,
+    } = req.body;
+
+    const newWorkout = new Workout({
+      name,
+      category,
+      description,
+      tips,
+      targetMuscles,
+      duration,
+      animationFile,
+      animationUrl: `${req.protocol}://${req.get('host')}/animations/${animationFile}`
+    });
+
+    const savedWorkout = await newWorkout.save();
+    res.status(201).json(savedWorkout);
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to create workout', details: error.message });
   }
 });
 
