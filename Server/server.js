@@ -26,7 +26,7 @@ app.use(cors());
 app.use('/users', userRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //
-app.use('/animations', express.static(path.join(__dirname, 'uploads/animations')));
+// app.use('/animations', express.static(path.join(__dirname, 'uploads/animations')));
 //
 app.use(bodyParser.json());
 
