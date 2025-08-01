@@ -33,6 +33,10 @@ app.use(bodyParser.json());
 const workoutRoutes = require('./routes/workoutRoutes');
 app.use('/api/workouts', workoutRoutes);
 
+const challengeRoutes = require('./routes/challengeRoutes');
+app.use('/api/challenges', challengeRoutes);
+
+
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
