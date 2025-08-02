@@ -1,3 +1,4 @@
+// routes/workouts.js
 const express = require('express');
 const router = express.Router();
 const Workout = require('../models/Workout');
@@ -6,11 +7,7 @@ const Workout = require('../models/Workout');
 router.get('/', async (req, res) => {
   try {
     const workouts = await Workout.find();
-    const fullWorkouts = workouts.map(w => ({
-      ...w._doc,
-      animationUrl: `${req.protocol}://${req.get('host')}/animations/${w.animationFile}`
-    }));
-    res.json(fullWorkouts);
+    res.json(workouts);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch workouts' });
   }
@@ -20,17 +17,13 @@ router.get('/', async (req, res) => {
 router.get('/category/:category', async (req, res) => {
   try {
     const workouts = await Workout.find({ category: req.params.category });
-    const fullWorkouts = workouts.map(w => ({
-      ...w._doc,
-      animationUrl: `${req.protocol}://${req.get('host')}/animations/${w.animationFile}`
-    }));
-    res.json(fullWorkouts);
+    res.json(workouts);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch workouts by category' });
   }
 });
 
-//POST
+// POST new workout
 router.post('/', async (req, res) => {
   try {
     const {
@@ -40,7 +33,7 @@ router.post('/', async (req, res) => {
       tips,
       targetMuscles,
       duration,
-      animationFile,
+      animationUrl,    // expect client to send full URL here
     } = req.body;
 
     const newWorkout = new Workout({
@@ -50,8 +43,7 @@ router.post('/', async (req, res) => {
       tips,
       targetMuscles,
       duration,
-      animationFile,
-      animationUrl: `${req.protocol}://${req.get('host')}/animations/${animationFile}`
+      animationUrl,
     });
 
     const savedWorkout = await newWorkout.save();
@@ -61,4 +53,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router
+module.exports = router;
