@@ -12,6 +12,7 @@ function adminAuth(req, res, next) {
       return res.status(403).json({ error: 'Access denied. Admins only.' });
     }
     req.user = decoded;
+    next(); // <--- MUST call next() to proceed!
   } catch (err) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
