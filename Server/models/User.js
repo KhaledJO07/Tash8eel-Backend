@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
   weight: { type: Number, default: null },
   goal: { type: String, default: '' },
   activityLevel: { type: String, default: '' },
+  isAdmin: { type: Boolean, default: false }, // for Admin Dashboard
   createdAt: { type: Date, default: Date.now },
 });
 
