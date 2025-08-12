@@ -11,22 +11,22 @@ const UserSchema = new mongoose.Schema({
   weight: { type: Number, default: null },
   goal: { type: String, default: '' },
   activityLevel: { type: String, default: '' },
-  
+  isAdmin: { type: Boolean, default: false }, // for Admin Dashboard
   // NEW STREAK FIELDS
   currentStreak: { type: Number, default: 0 },
   longestStreak: { type: Number, default: 0 },
   lastCompletionDate: { type: Date, default: null },
   totalChallengesCompleted: { type: Number, default: 0 },
   streakFreezeUsed: { type: Boolean, default: false }, // Optional: streak freeze feature
-  
+
   createdAt: { type: Date, default: Date.now },
 });
 
 // Method to calculate streak
-UserSchema.methods.updateStreak = function() {
+UserSchema.methods.updateStreak = function () {
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Start of today
-  
+
   if (!this.lastCompletionDate) {
     // First completion ever
     this.currentStreak = 1;
@@ -34,12 +34,12 @@ UserSchema.methods.updateStreak = function() {
     this.lastCompletionDate = today;
     return this.currentStreak;
   }
-  
+
   const lastCompletion = new Date(this.lastCompletionDate);
   lastCompletion.setHours(0, 0, 0, 0);
-  
+
   const daysDiff = Math.floor((today - lastCompletion) / (1000 * 60 * 60 * 24));
-  
+
   if (daysDiff === 0) {
     // Same day completion, no change
     return this.currentStreak;
