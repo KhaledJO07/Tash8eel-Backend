@@ -9,3 +9,4 @@ router.use('/workouts', require('./workouts'));
 router.use('/challenges', require('./challenges'));
 
 module.exports = router;
+    
