@@ -29,6 +29,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // for Admin Dashboard
 const adminRoutes = require('./routes/admin');
 app.use('/admin', adminRoutes);
+    // Admin users
+const adminUserRoutes = require('./routes/admin/users');
+app.use('/admin/users', adminUserRoutes);
+
+    // Admin workouts
+const adminWorkoutRoutes = require('./routes/admin/workouts');
+app.use('/admin/workouts', adminWorkoutRoutes);
 
 //
 // app.use('/animations', express.static(path.join(__dirname, 'uploads/animations')));
