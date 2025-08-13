@@ -25,6 +25,11 @@ app.use(cors());
 const userRoutes = require('./routes/userRoutes'); 
 app.use('/users', userRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// for Admin Dashboard
+const adminRoutes = require('./routes/admin');
+app.use('/admin', adminRoutes);
+
 //
 // app.use('/animations', express.static(path.join(__dirname, 'uploads/animations')));
 //
