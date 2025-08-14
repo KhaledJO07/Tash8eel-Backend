@@ -36,6 +36,9 @@ app.use('/admin/users', adminUserRoutes);
     // Admin workouts
 const adminWorkoutRoutes = require('./routes/admin/workouts');
 app.use('/admin/workouts', adminWorkoutRoutes);
+    // Admin challenges
+const adminChallengeRoutes = require('./routes/admin/challenges');
+app.use('/admin/challenges', adminChallengeRoutes);
 
 //
 // app.use('/animations', express.static(path.join(__dirname, 'uploads/animations')));
